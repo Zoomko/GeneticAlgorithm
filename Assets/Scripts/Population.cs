@@ -7,7 +7,7 @@ public class Population : MonoBehaviour
 {
     public int size;
     private int generationNumber = 0;
-    private float bestScore = 0f;
+    private float bestScore = 0;
     public GameObject creature;    
     Dictionary<GameObject,Creature> Creatures;
 
@@ -16,7 +16,7 @@ public class Population : MonoBehaviour
         Creatures = new Dictionary<GameObject, Creature>();        
         for (int i = 0; i < size;i++)
         {
-            var obj = Instantiate(creature, new Vector3(i * 10, 10f, 0), Quaternion.identity);
+            var obj = Instantiate(creature, new Vector3(i * 10, 9f, 0), Quaternion.identity);
             Creatures.Add(obj, obj.GetComponent<Creature>());            
         }
     }
@@ -24,10 +24,21 @@ public class Population : MonoBehaviour
     {
         InvokeRepeating("ResetGen", 5f, 10f);
     }
+    
+    void SetBestScore()
+    {
+        bestScore = -1000f;
+        foreach (var i in Creatures.Values)
+        {
+            if (i.score > bestScore)
+                bestScore = i.score;
+        }
+    }
     // Update is called once per frame
     void ResetGen()
     {
         generationNumber++;
+        SetBestScore();
         foreach(var i in Creatures.Values)
         {
             i.ResetPosition();

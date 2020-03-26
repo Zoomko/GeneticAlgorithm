@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Creature:MonoBehaviour
 {    
-    float score = 0f;
+    public float score = 0f;
     bool isAlive = true;
     (Transform, MyTransform) body;
     HingeJoint[] hinges;
@@ -50,13 +50,14 @@ public class Creature:MonoBehaviour
     JointMotor ChangetargetVelocity(JointMotor m)
     {
         var motor = m;
-        if (Random.value > 0.8)
+        motor.force = 100f;
+        if (Random.value > 0.5)
         {
-            motor.targetVelocity = 100;
+            motor.targetVelocity = 10;
         }
         else
         {
-            motor.targetVelocity = -100;
+            motor.targetVelocity = -10;
         }
         return motor;
     }    
