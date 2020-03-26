@@ -1,36 +1,41 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Population : MonoBehaviour
 {
     public int size;
-    public int generationNumber;    
-    public GameObject creature;
-    List<GameObject> creatures;
+    private int generationNumber = 0;
+    private float bestScore = 0f;
+    public GameObject creature;    
+    Dictionary<GameObject,Creature> Creatures;
 
     private void Awake()
     {
-        creatures = new List<GameObject>();
+        Creatures = new Dictionary<GameObject, Creature>();        
         for (int i = 0; i < size;i++)
         {
-            creatures.Add(Instantiate(creature, new Vector3(i * 10, 10f, 0), Quaternion.identity));
+            var obj = Instantiate(creature, new Vector3(i * 10, 10f, 0), Quaternion.identity);
+            Creatures.Add(obj, obj.GetComponent<Creature>());            
         }
     }
-    void Start()
+    private void Start()
     {
-        
+        InvokeRepeating("ResetGen", 5f, 10f);
     }
-
     // Update is called once per frame
-    void Update()
+    void ResetGen()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        generationNumber++;
+        foreach(var i in Creatures.Values)
         {
-            foreach(var i in creatures)
-            {
-                i.GetComponent<Creature>().ResetPosition();
-            }
-        }
+            i.ResetPosition();
+        }       
+    }
+    private void OnGUI()
+    {        
+        GUI.Label(new Rect(new Vector2(0, 0), new Vector2(300, 30)), String.Format("Generation number: {0}", generationNumber));
+        GUI.Label(new Rect(new Vector2(0, 30), new Vector2(300, 30)), String.Format("Best score: {0}", bestScore));
     }
 }

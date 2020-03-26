@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Creature:MonoBehaviour
-{
+{    
     float score = 0f;
     bool isAlive = true;
+    (Transform, MyTransform) body;
     HingeJoint[] hinges;
     List<(Transform,MyTransform)> PartsOfBody;    
+
     private void Awake()
-    {                
+    {        
         hinges = GetComponentsInChildren<HingeJoint>();
         PartsOfBody = new List<(Transform, MyTransform)>();
         foreach (var i in GetComponentsInChildren<Transform>())
@@ -17,12 +19,14 @@ public class Creature:MonoBehaviour
             Transform t = i as Transform;
             if (i != null)
             {
-                PartsOfBody.Add((t, new MyTransform(t.position, t.rotation)));                
+                PartsOfBody.Add((t, new MyTransform(t.position, t.rotation)));   
+                if(i.name == "body")
+                    body = (t, new MyTransform(t.position, t.rotation));
             }
         }
         print(PartsOfBody.Count);
     }
-   
+    
     private void Update()
     {
         foreach(var i in hinges)
@@ -30,8 +34,13 @@ public class Creature:MonoBehaviour
             i.motor = ChangetargetVelocity(i.motor);
         }
     }
+    public void ChangeScore()
+    {
+        score = Vector3.SqrMagnitude(body.Item1.position - body.Item2.Position);
+    }
     public void ResetPosition()
     {
+        ChangeScore();
         foreach (var it in PartsOfBody)
         {
             it.Item1.position = it.Item2.Position;
@@ -65,6 +74,7 @@ class MyTransform
         z = v.z;
         rotation = q;
     }
+    
     public Vector3 Position
     {
         get
